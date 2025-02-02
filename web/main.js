@@ -1,8 +1,14 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.173.0/+esm';
-import OrbitControlsFactory from 'https://cdn.jsdelivr.net/npm/three-orbit-controls@82.1.0/+esm';
+import CameraControls from 'https://cdn.jsdelivr.net/npm/camera-controls@2.9.0/+esm';
 
-const OrbitControls = OrbitControlsFactory(THREE);
+// extract CSS variable values
+const rootStyles = getComputedStyle(document.documentElement);
+const materialColor = rootStyles.getPropertyValue('--material-color').trim();
+const materialMetalness = parseFloat(rootStyles.getPropertyValue('--material-metalness'));
+const materialRoughness = parseFloat(rootStyles.getPropertyValue('--material-roughness'));
 
+
+CameraControls.install({ THREE });
 const api = window.location.origin + '/api/';
 
 // Initialize Three.js viewer
@@ -23,13 +29,30 @@ light.position.set(1, 1, 1);
 scene.add(light);
 scene.add(new THREE.AmbientLight(0x404040));
 
-const gridHelper = new THREE.GridHelper(10, 10);
+let gridHelper = new THREE.GridHelper(10, 10);
 scene.add(gridHelper);
+
+function updateGrid(model) {
+    // Remove old grid
+    scene.remove(gridHelper);
+    
+    // Calculate bounding box of model
+    const bbox = new THREE.Box3().setFromObject(model);
+    const size = bbox.getSize(new THREE.Vector3());
+    
+    // Get the larger of width/depth and add some padding
+    const maxSize = Math.max(size.x, size.z) * 1.5;
+    const gridSize = Math.ceil(maxSize / 10) * 10; // Round up to nearest 10
+    
+    // Create new grid
+    gridHelper = new THREE.GridHelper(gridSize, Math.floor(gridSize/2));
+    scene.add(gridHelper);
+}
 
 camera.position.set(8, 8, 8);
 camera.lookAt(0, 0, 0);
 
-// const controls = new OrbitControls(camera, renderer.domElement);
+const cameraControls = new CameraControls(camera, renderer.domElement);
 
 // Function to update output display
 function updateOutput(message, success) {
@@ -50,6 +73,9 @@ function updateOutput(message, success) {
     }
 }
 
+// Keep track of current model for cleanup
+let currentModel = null;
+
 // handle model preview
 document.getElementById('preview-btn').addEventListener('click', async () => {
     const code = document.getElementById('code-input').value;
@@ -65,6 +91,32 @@ document.getElementById('preview-btn').addEventListener('click', async () => {
         const data = await response.json();
         const success = statusCode === 200 && data.message !== "none";
         updateOutput(data.message, success);
+
+        if (success && data.data && data.data !== "None") {
+            // Remove existing model if any
+            if (currentModel) {
+                scene.remove(currentModel);
+            }
+
+            // Create geometry from the mesh data
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(data.data.vertices, 3));
+            geometry.setIndex(data.data.faces);
+            geometry.computeVertexNormals();
+
+            // Create material and mesh
+            const material = new THREE.MeshStandardMaterial({
+                color: materialColor,
+                metalness: materialMetalness,
+                roughness: materialRoughness,
+            });
+            
+            currentModel = new THREE.Mesh(geometry, material);
+            scene.add(currentModel);
+            
+            // Update grid size based on model
+            updateGrid(currentModel);
+        }
     } catch (error) {
         console.log(error);
         updateOutput('Error: ' + error.message, false);
@@ -92,8 +144,12 @@ document.getElementById('stl-btn').addEventListener('click', async () => {
   }
 });
 
+const clock = new THREE.Clock();
+
 // Animation loop
 function animate() {
+    const delta = clock.getDelta();
+    cameraControls.update(delta);
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 }

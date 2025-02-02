@@ -1,3 +1,9 @@
+:root {
+  --material-color: #156289;
+  --material-metalness: 0.1;
+  --material-roughness: 0.5;
+}
+
 body, html {
   margin: 0;
   padding: 0;

@@ -32,6 +32,7 @@ RUN useradd -r -m -d /home/cadquery -s /bin/false cadquery \
 # copy files
 COPY --chown=cadquery:cadquery app.py .
 COPY --chown=cadquery:cadquery CadQueryValidator.py .
+COPY --chown=cadquery:cadquery Preview.py .
 # switch to non-root user cadquery
 USER cadquery
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", \

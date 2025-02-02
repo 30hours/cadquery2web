@@ -5,6 +5,7 @@
 """
 
 from CadQueryValidator import CadQueryValidator
+from Preview import preview
 
 from flask import Flask, request, send_file
 import cadquery as cq
@@ -15,13 +16,11 @@ import json
 app = Flask(__name__)
 validator = CadQueryValidator()
 
-def execute(code, extra_code=''):
-
+def execute(code):
   """
   @brief All remote code execution through this function
   """
-  
-  code = code + extra_code
+  code = code
   cleaned_code, error = validator.validate(code)
   if error:
     return None, error
@@ -36,11 +35,9 @@ def execute(code, extra_code=''):
   return locals_dict, None
 
 def make_response(data=None, message="Success", status=200):
-  
   """
   @brief Generic function to send HTTP responses
   """
-  
   return json.dumps({
     "data": data if data else "None",
     "message": message
@@ -49,14 +46,15 @@ def make_response(data=None, message="Success", status=200):
 @app.route('/preview', methods=['POST'])
 def run_preview():
   try:
-    # append preview component to code
-    # code = request.json['code'] + 'preview'
     code = request.json['code']
-    result, error = execute(code, '')
+    output, error = execute(code)
     if error:
-        return make_response(message=error, status=400)
-    # TODO extract useful data
-    return make_response(data="data", message="Preview generated successfully")
+      return make_response(message=error, status=400)
+    # extract useful data
+    mesh_data, error = preview(output['result'])
+    if error:
+      return make_response(message=error, status=400)
+    return make_response(data=mesh_data, message="Preview generated successfully")
   except Exception as e:
       return make_response(message=str(e), status=500)
 
@@ -66,7 +64,7 @@ def run_stl():
     # append STL component to code
     # code = request.json['code'] + 'stl'
     code = request.json['code']
-    result, error = execute(code, '')
+    result, error = execute(code)
     if error:
         return make_response(message=error, status=400)
     # TODO extract useful data
