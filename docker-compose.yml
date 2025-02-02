@@ -1,0 +1,52 @@
+version: '3'
+services:
+  web:
+    image: httpd:2.4
+    ports:
+      - 49157:80
+    volumes:
+      - ./web:/usr/local/apache2/htdocs
+      - ./web/httpd.conf:/usr/local/apache2/conf/httpd.conf
+    networks:
+      - api
+    container_name: cadquery2web_web
+  node:
+    build: ./node
+    ports:
+      - 49158:3000
+    depends_on:
+      - cadquery
+    networks:
+      - cadquery
+      - api
+    container_name: cadquery2web_node
+  cadquery:
+    build: ./cadquery
+    ports:
+      - 49159:5000
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
+      - /home/cadquery/.cache/ezdxf:rw,noexec,nosuid,uid=1000,gid=1000
+    user: cadquery
+    mem_limit: 512m
+    memswap_limit: 512m
+    ulimits:
+      nproc: 100
+      nofile:
+        soft: 1000
+        hard: 1000
+    networks:
+      - cadquery
+    container_name: cadquery2web_cadquery
+networks:
+  cadquery:
+    driver: bridge
+  api:
+    driver: bridge
