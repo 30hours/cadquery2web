@@ -33,7 +33,18 @@ app.post('/:endpoint', async (req, res) => {
     const { code } = req.body;
     // add to queue and wait for response
     const response = await requestQueue.addRequest(endpoint, code);
-    res.send(response);
+    // if STL request, forward the headers and binary data
+    if (endpoint === 'stl') {
+      // forward content-disposition header if present
+      const contentDisposition = response.headers?.['content-disposition'];
+      if (contentDisposition) {
+        res.setHeader('Content-Disposition', contentDisposition);
+      }
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.send(response);
+    } else {
+      res.send(response);
+    }
   } catch (error) {
     res.status(error.status).json({
       data: 'none',

@@ -12,6 +12,7 @@ import cadquery as cq
 import numpy as np
 import math
 import json
+import tempfile
 
 app = Flask(__name__)
 validator = CadQueryValidator()
@@ -61,14 +62,27 @@ def run_preview():
 @app.route('/stl', methods=['POST'])
 def run_stl():
   try:
-    # append STL component to code
-    # code = request.json['code'] + 'stl'
     code = request.json['code']
     result, error = execute(code)
     if error:
         return make_response(message=error, status=400)
-    # TODO extract useful data
-    return make_response(data="data", message="Preview generated successfully")
+    # get the CadQuery result
+    model = result['result']
+    # create and manage temporary file
+    temp_file = tempfile.NamedTemporaryFile(suffix='.stl', delete=True)
+    # export model to an STL
+    cq.exporters.export(model, temp_file.name)
+    # send file and ensure cleanup
+    response = send_file(
+      temp_file.name,
+      as_attachment=True,
+      download_name='model.stl',
+      mimetype='application/octet-stream')
+    # register cleanup callback
+    @response.call_on_close
+    def cleanup():
+      temp_file.close()
+    return response
   except Exception as e:
       return make_response(message=str(e), status=500)
 

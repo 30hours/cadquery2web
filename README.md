@@ -4,7 +4,7 @@ You know when you want to generate a [CadQuery](https://github.com/CadQuery/cadq
 
 See a live instance at [cad.30hours.dev](http://cad.30hours.dev).
 
-TODO picture of front-end
+![cadquery2web example](./example.png)
 
 ## Usage
 
@@ -27,6 +27,12 @@ The software consists of 3 containers:
 - **cadquery** runs the CadQuery server in Python. The CadQuery server has security controls to ensure only CadQuery code can be executed, to prevent remote code execution and privilege escalation (see the [CadQuery Dockerfile](./cadquery/Dockerfile) and [docker-compose.yml](./docker-compose.yml) for details). Strict whitelisting on the imports and functions that can be executed has been implemented in [CadQueryValidator.py](./cadquery/CadQueryValidator.py).
 
   Once code passes the validator, the shape undergoes coarse tesselation into vertices and faces. This data is passed back to the web front-end for display. An STL file can then be generated for the high resolution model.
+
+## Notes
+
+- See [CadQuery examples](https://cadquery.readthedocs.io/en/latest/examples.html) for code that can be run directly.
+- Loosely based on [replicad](https://github.com/sgenoud/replicad) but using CadQuery instead of [OpenCascade.js](https://ocjs.org/).
+- Pull requests are very welcome.
 
 ## License
 

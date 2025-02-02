@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>cadquery2web</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="main.css">
+  <title>cadquery2web</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="main.css">
 </head>
 <body>
   <div class="container">
-      <div class="left-panel">
-          <h1>cadquery2web</h1>
-          <textarea id="code-input" placeholder="Enter CadQuery code here..."></textarea>
-          <div class="buttons-container">
-              <button class="render-btn" id="preview-btn">Preview</button>
-              <button class="render-btn" id="stl-btn">Download STL</button>
-          </div>
-          <div class="output-container" id="output-container">
-              <div class="output-title">Output:</div>
-              <pre id="output-message"></pre>
-          </div>
+    <div class="left-panel">
+      <h1><a href="http://github.com/30hours/cadquery2web">cadquery2web</a></h1>
+      <textarea id="code-input" spellcheck="false" placeholder="Enter CadQuery code here..."></textarea>
+      <div class="buttons-container">
+        <button class="render-btn" id="preview-btn">Preview</button>
+        <button class="render-btn" id="stl-btn">Download STL</button>
       </div>
+      <div class="output-container" id="output-container">
+        <div class="output-title">Output:</div>
+        <pre id="output-message"></pre>
+      </div>
+    </div>
       <div class="right-panel" id="viewer"></div>
   </div>
+    <script type="module" src="models.js"></script>
     <script type="module" src="main.js"></script>
 </body>
 </html>
