@@ -112,11 +112,11 @@ h1 a:hover {
 }
 
 .output-container.warning {
-  background-color: rgba(228, 161, 27, 0.5); /* Restored original warning color */
+  background-color: rgba(228, 161, 27, 0.5);
 }
 
 .output-container.success {
-  background-color: rgba(20, 164, 77, 0.5); /* Restored original success color */
+  background-color: rgba(20, 164, 77, 0.5);
 }
 
 .output-title {

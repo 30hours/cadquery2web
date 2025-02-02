@@ -92,6 +92,7 @@ function updateOutput(message, success) {
 let currentModel = null;
 // handle model preview
 document.getElementById('preview-btn').addEventListener('click', async () => {
+  updateOutput('Processing...', false);  // Show processing status
   const code = document.getElementById('code-input').value;
   try {
     const response = await fetch(api + 'preview', {
@@ -149,6 +150,7 @@ document.getElementById('preview-btn').addEventListener('click', async () => {
 
 // handle STL download
 document.getElementById('stl-btn').addEventListener('click', async () => {
+  updateOutput('Processing...', false);
   const code = document.getElementById('code-input').value;
   try {
     const response = await fetch(api + 'stl', {
