@@ -32,6 +32,7 @@ The software consists of 3 containers:
 
 - See [CadQuery examples](https://cadquery.readthedocs.io/en/latest/examples.html) for code that can be run directly.
 - Loosely based on [replicad](https://github.com/sgenoud/replicad) but using CadQuery instead of [OpenCascade.js](https://ocjs.org/).
+- Will add STEP file outputs.
 - Pull requests are very welcome.
 
 ## License
