@@ -3,12 +3,25 @@
 /// @author 30hours
 
 const express = require('express');
+const rate_limit = require('express-rate-limit');
 const cors = require('cors');
 const RequestQueue = require('./RequestQueue');
 const app = express();
 
+// global rate limiter
+const limiter = rate_limit({
+  // 10 mins
+  windowMs: 10 * 60 * 1000,
+  max: 30,
+  message: {
+    data: 'none',
+    message: 'Rate limited (>30 requests in 10 mins)'
+  }
+});
+
 app.use(cors());
 app.use(express.json());
+app.use(limiter);
 
 const VALID_ENDPOINTS = ['preview', 'stl']
 
