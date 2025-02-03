@@ -32,8 +32,15 @@ The software consists of 3 containers:
 
 - See [CadQuery examples](https://cadquery.readthedocs.io/en/latest/examples.html) for code that can be run directly.
 - Loosely based on [replicad](https://github.com/sgenoud/replicad) but using CadQuery instead of [OpenCascade.js](https://ocjs.org/).
-- Will add STEP file outputs.
 - Pull requests are very welcome.
+
+## Future Work
+
+- Add STEP file outputs.
+- Support arbitrary function definitions. At the moment all functions are whitelisted, so while they can be defined, they cannot be executed. Will need to examine how this may compromise server security.
+- Add line numbers to Python editor.
+- Better error reporting/handling for syntax issues.
+- Add axis labels on three.js display.
 
 ## License
 
