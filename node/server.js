@@ -20,7 +20,8 @@ const limiter = rate_limit({
 });
 
 app.use(cors());
-app.use(express.json());
+// limit to 
+app.use(express.json({ limit: '10kb' }));
 app.use(limiter);
 
 const VALID_ENDPOINTS = ['preview', 'stl']
