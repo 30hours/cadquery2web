@@ -7,6 +7,7 @@ const rate_limit = require('express-rate-limit');
 const cors = require('cors');
 const RequestQueue = require('./RequestQueue');
 const app = express();
+app.set('trust proxy', 1);
 
 // global rate limiter
 const limiter = rate_limit({
