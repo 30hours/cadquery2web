@@ -27,9 +27,12 @@ def execute(code):
     return None, error
   # safe execute code
   globals_dict = {
-      "cq": cq,
-      "np": np,
-      "math": math
+    "cq": cq,
+    "np": np,
+    "math": math,
+    "__builtins__": {name: __builtins__[name] 
+      for name in validator.allowed_builtins
+      if name in __builtins__}
   }
   locals_dict = {}
   exec(cleaned_code, globals_dict, locals_dict)
