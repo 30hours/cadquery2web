@@ -138,6 +138,12 @@ canvas {
   height: 100% !important;
 }
 
+.button-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Mobile Responsive Design */
 @media screen and (max-width: 768px) {
   .container {

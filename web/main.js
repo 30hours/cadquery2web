@@ -91,7 +91,9 @@ function updateOutput(message, success) {
 // keep track of current model for cleanup
 let currentModel = null;
 // handle model preview
-document.getElementById('preview-btn').addEventListener('click', async () => {
+const preview_button = document.getElementById('preview-btn');
+preview_button.addEventListener('click', async () => {
+  preview_button.classList.add('button-disabled');
   updateOutput('Processing...', false);  // Show processing status
   const code = document.getElementById('code-input').value;
   try {
@@ -146,10 +148,13 @@ document.getElementById('preview-btn').addEventListener('click', async () => {
     console.log(error);
     updateOutput('Error: ' + error.message, false);
   }
+  preview_button.classList.remove('button-disabled');
 });
 
 // handle STL download
-document.getElementById('stl-btn').addEventListener('click', async () => {
+const stl_button = document.getElementById('stl-btn');
+stl_button.addEventListener('click', async () => {
+  stl_button.classList.add('button-disabled');
   updateOutput('Processing...', false);
   const code = document.getElementById('code-input').value;
   try {
@@ -192,6 +197,7 @@ document.getElementById('stl-btn').addEventListener('click', async () => {
     console.error(error);
     updateOutput('Error: ' + error.message, false);
   }
+  stl_button.classList.remove('button-disabled');
 });
 
 const clock = new THREE.Clock();
