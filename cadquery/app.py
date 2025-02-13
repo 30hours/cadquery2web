@@ -88,6 +88,33 @@ def run_stl():
     return response
   except Exception as e:
       return make_response(message=str(e), status=500)
+    
+@app.route('/step', methods=['POST'])
+def run_step():
+  try:
+    code = request.json['code']
+    result, error = execute(code)
+    if error:
+        return make_response(message=error, status=400)
+    # get the CadQuery result
+    model = result['result']
+    # create and manage temporary file
+    temp_file = tempfile.NamedTemporaryFile(suffix='.step', delete=True)
+    # export model to STEP
+    cq.exporters.export(model, temp_file.name)
+    # send file and ensure cleanup
+    response = send_file(
+      temp_file.name,
+      as_attachment=True,
+      download_name='model.step',
+      mimetype='application/octet-stream')
+    # register cleanup callback
+    @response.call_on_close
+    def cleanup():
+      temp_file.close()
+    return response
+  except Exception as e:
+      return make_response(message=str(e), status=500)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

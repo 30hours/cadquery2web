@@ -37,7 +37,7 @@ class RequestQueue {
       const response = await axios.post('http://cadquery:5000/' + endpoint, {
           code: code
       }, {
-          responseType: endpoint === 'stl' ? 'arraybuffer' : 'json'
+          responseType: (endpoint === 'stl' || endpoint === 'step') ? 'arraybuffer' : 'json'
       });
       // resolve the promise for this specific request
       const resolver = this.requestMap.get(request_id);

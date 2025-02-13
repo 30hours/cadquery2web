@@ -25,7 +25,7 @@ app.use(cors());
 app.use(express.json({ limit: '10kb' }));
 app.use(limiter);
 
-const VALID_ENDPOINTS = ['preview', 'stl']
+const VALID_ENDPOINTS = ['preview', 'stl', 'step']
 
 const requestQueue = new RequestQueue();
 
@@ -48,8 +48,8 @@ app.post('/:endpoint', async (req, res) => {
     const { code } = req.body;
     // add to queue and wait for response
     const response = await requestQueue.addRequest(endpoint, code);
-    // if STL request, forward the headers and binary data
-    if (endpoint === 'stl') {
+    // if STL/STEP request, forward the headers and binary data
+    if ((endpoint === 'stl') || (endpoint === 'step')) {
       // forward content-disposition header if present
       const contentDisposition = response.headers?.['content-disposition'];
       if (contentDisposition) {

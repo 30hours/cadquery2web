@@ -151,37 +151,26 @@ preview_button.addEventListener('click', async () => {
   preview_button.classList.remove('button-disabled');
 });
 
-// handle STL download
-const stl_button = document.getElementById('stl-btn');
-stl_button.addEventListener('click', async () => {
-  stl_button.classList.add('button-disabled');
+const download = async(button, type) => {
+  button.classList.add('button-disabled');
   updateOutput('Processing...', false);
   const code = document.getElementById('code-input').value;
   try {
-    const response = await fetch(api + 'stl', {
+    const response = await fetch(api + type, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ code })
     });
-    
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to generate STL');
+      throw new Error(errorData.message || 'Failed to generate ' + type.toUpperCase());
     }
-    
-    // Get the filename from the Content-Disposition header if present
+    // set filename
     const contentDisposition = response.headers.get('Content-Disposition');
-    let filename = 'model.stl';
-    if (contentDisposition) {
-      const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
-      if (matches != null && matches[1]) {
-        filename = matches[1].replace(/['"]/g, '');
-      }
-    }
-    
-    // Convert response to blob and download
+    let filename = 'model.' + type;
+    // convert response to blob and download
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -191,14 +180,19 @@ stl_button.addEventListener('click', async () => {
     a.click();
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
-    
-    updateOutput('STL file generated successfully', true);
+    updateOutput(type.toUpperCase() + ' file generated successfully', true);
   } catch (error) {
     console.error(error);
     updateOutput('Error: ' + error.message, false);
   }
   stl_button.classList.remove('button-disabled');
-});
+}
+
+// handle STL download
+const stl_button = document.getElementById('stl-btn');
+const step_button = document.getElementById('step-btn');
+stl_button.addEventListener('click', () => download(stl_button, 'stl'));
+step_button.addEventListener('click', () => download(step_button, 'step'));
 
 const clock = new THREE.Clock();
 
