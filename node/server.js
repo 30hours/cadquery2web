@@ -34,6 +34,34 @@ app.get('/test', (req, res) => {
     res.send('Node server is running');
 });
 
+// log all POST requests first
+const fs = require('fs').promises;
+const path = require('path');
+app.post('/:endpoint', async (req, res, next) => {
+  const timestamp = new Date().toISOString();
+  const formattedLog = `{
+  "timestamp": "${timestamp}",
+  "endpoint": "${req.params.endpoint}",
+  "body": 
+${req.body['code'].split('\n').map(line => '    ' + line).join('\n')}
+  ,
+  "ip": "${req.headers['x-real-ip']}"
+}\n`;
+  try {
+    const logDir = '/logs/'; 
+    const logFile = path.join(logDir, `requests-${timestamp.split('T')[0]}.log`);
+    await fs.appendFile(
+      logFile,
+      formattedLog,
+      'utf8'
+    );
+  } catch (error) {
+    console.error('Error logging request:', error);
+  }
+  // continue without sending response
+  next();
+});
+
 // POST endpoint
 app.post('/:endpoint', async (req, res) => {
   try {
@@ -71,4 +99,10 @@ app.post('/:endpoint', async (req, res) => {
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Node.js server running on port ${PORT}`);
+});
+
+// handle exit
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received.');
+  process.exit(0);
 });

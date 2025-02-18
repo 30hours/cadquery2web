@@ -16,6 +16,8 @@ services:
       - 49158:3000
     depends_on:
       - cadquery
+    volumes:
+      - ./logs:/logs
     networks:
       - cadquery
       - api
